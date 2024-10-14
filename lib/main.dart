@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dashboardpage.dart';
+import 'classroom.dart'; // Adjust the import based on the file location
 
 void main() {
   runApp(const MyApp());
@@ -16,9 +19,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ClassroomPage extends StatelessWidget {
+class ClassroomPage extends StatefulWidget {
   const ClassroomPage({super.key});
 
+  @override
+  State<ClassroomPage> createState() => _ClassroomPageState();
+}
+
+class _ClassroomPageState extends State<ClassroomPage> {
+  List<Map<String, dynamic>> uploadedFiles = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,20 +121,34 @@ class ClassroomPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                   child: ListTile(
-                    leading: Icon(Icons.bar_chart, color: Colors.white),
-                    title: Text('Dashboard',
+                    leading: const Icon(Icons.bar_chart, color: Colors.white),
+                    title: const Text('Dashboard',
                         style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DashboardPage()),
+                      );
+                    },
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                   child: ListTile(
-                    leading: Icon(Icons.add_circle, color: Colors.white),
-                    title: Text('Create New Classroom',
+                    leading: const Icon(Icons.add_circle, color: Colors.white),
+                    title: const Text('Create New Classroom',
                         style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ClassRoomPage()),
+                      );
+                    },
                   ),
                 ),
                 const Padding(
@@ -349,8 +372,30 @@ class ClassroomPage extends StatelessWidget {
                                 Card(
                                   color: const Color(0xFFFB7171),
                                   child: InkWell(
-                                    onTap: () {
-                                      // Add functionality for file upload
+                                    onTap: () async {
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles(
+                                        type: FileType.custom,
+                                        allowedExtensions: [
+                                          'pdf',
+                                          'doc',
+                                          'txt',
+                                          'ppt'
+                                        ],
+                                      );
+
+                                      if (result != null) {
+                                        PlatformFile file = result.files.first;
+
+                                        // Add file details to the list
+                                        setState(() {
+                                          uploadedFiles.add({
+                                            'name': file.name,
+                                            'size': file.size,
+                                            'extension': file.extension,
+                                          });
+                                        });
+                                      }
                                     },
                                     child: const Padding(
                                       padding: EdgeInsets.all(12.0),
