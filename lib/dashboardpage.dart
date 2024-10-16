@@ -1,11 +1,14 @@
-// dashboard_page.dart
 import 'package:flutter/material.dart';
+import 'classroomdetails.dart'; // Reference to ClassroomDetailsPage
+import 'classroom.dart'; // Reference for ClassRoomPage and created classrooms
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Fetch the classrooms from ClassRoomPage's static createdClassrooms list
+    final createdClassrooms = ClassroomData.instance.createdClassrooms;
     return Scaffold(
         body: Container(
       // Apply the gradient to the entire screen
@@ -195,6 +198,58 @@ class DashboardPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                // Existing header code...
+                const Text(
+                  "Jake's Dashboard",
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
+                Text(
+                  '${createdClassrooms.length} Classrooms Created',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                // Dropdown to select classroom
+                DropdownButton<String>(
+                  dropdownColor:
+                      const Color(0xFF2C2C2C), // Background color for dropdown
+                  hint: const Text(
+                    'Select Classroom',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  value: null,
+                  items: createdClassrooms.map((classroom) {
+                    return DropdownMenuItem<String>(
+                      value: classroom['name'],
+                      child: Text(
+                        classroom['name'],
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (selectedClassroom) {
+                    // Navigate to ClassroomDetailsPage when a classroom is selected
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ClassroomDetailsPage(
+                          name: selectedClassroom!,
+                          description: createdClassrooms.firstWhere((c) =>
+                              c['name'] == selectedClassroom)['description'],
+                          categories: createdClassrooms.firstWhere((c) =>
+                              c['name'] ==
+                              selectedClassroom)['selectedCategories'],
+                          maxCapacity: createdClassrooms.firstWhere((c) =>
+                              c['name'] == selectedClassroom)['maxCapacity'],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import 'classroomdetails.dart';
 import 'dashboardpage.dart';
 
 void main() {
@@ -27,6 +28,16 @@ class ClassRoomPage extends StatefulWidget {
   _ClassRoomPageState createState() => _ClassRoomPageState();
 }
 
+class ClassroomData {
+  // Private constructor
+  ClassroomData._privateConstructor();
+
+  static final ClassroomData instance = ClassroomData._privateConstructor();
+
+  // List to store created classrooms
+  List<Map<String, dynamic>> createdClassrooms = [];
+}
+
 class _ClassRoomPageState extends State<ClassRoomPage> {
   final TextEditingController classroomNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -40,8 +51,6 @@ class _ClassRoomPageState extends State<ClassRoomPage> {
     'Arts': ['Music', 'Drawing', 'Painting']
   };
   Map<String, List<String>> selectedCategories = {};
-  // A list to temporarily store created classrooms
-  List<Map<String, dynamic>> createdClassrooms = [];
 
   void toggleCategory(String category, String subcategory, bool isSelected) {
     setState(() {
@@ -60,30 +69,44 @@ class _ClassRoomPageState extends State<ClassRoomPage> {
   }
 
   void createClassroom() {
+    if (classroomNameController.text.isEmpty ||
+        descriptionController.text.isEmpty ||
+        maxCapacity <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter all details!')),
+      );
+      return;
+    }
+
     final newClassroom = {
       'name': classroomNameController.text,
       'description': descriptionController.text,
-      // Create a copy of selectedCategories to avoid reference issues
       'selectedCategories': Map<String, List<String>>.from(selectedCategories),
-      'capacity': maxCapacity,
+      'maxCapacity': maxCapacity,
     };
 
-    // Add new classroom to the list and update UI
     setState(() {
-      createdClassrooms.add(newClassroom); // Append classroom to list
+      ClassroomData.instance.createdClassrooms
+          .add(newClassroom); // Add to classrooms list
     });
 
-    // Clear the input fields after creating a classroom
     classroomNameController.clear();
     descriptionController.clear();
-    selectedCategories.clear(); // Clear the selected categories if needed
+    selectedCategories.clear();
 
-    // Print the created classrooms
-    print('Classroom Created: $newClassroom');
-    print('Total Classrooms: ${createdClassrooms.length}');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Classroom "${newClassroom['name']}" created!')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClassroomDetailsPage(
+          name: newClassroom['name'] as String,
+          description: newClassroom['description'] as String,
+          categories:
+              newClassroom['selectedCategories'] as Map<String, List<String>>,
+          maxCapacity: newClassroom['maxCapacity'] as int,
+        ),
+      ),
     );
+    print(ClassroomData.instance.createdClassrooms.length);
   }
 
   @override
@@ -472,7 +495,7 @@ class _ClassRoomPageState extends State<ClassRoomPage> {
                       ),
                       TextField(
                         controller: descriptionController,
-                        maxLength: 15,
+                        maxLength: 200,
                         style: TextStyle(color: Colors.white),
                         decoration: const InputDecoration(
                           labelText: 'Classroom Description',
@@ -569,19 +592,26 @@ class _ClassRoomPageState extends State<ClassRoomPage> {
                               color: Colors.white),
                         ),
                       ),
+
+                      const SizedBox(height: 10),
                       TextField(
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           labelText: 'Maximum capacity allowed in classroom',
                           border: OutlineInputBorder(),
                         ),
+                        style: TextStyle(color: Colors.white),
                         onChanged: (value) {
-                          onChanged:
-                          (value) {
-                            maxCapacity = int.tryParse(value) ?? 0;
-                          };
+                          // Parse the input value and update maxCapacity
+                          if (value.isNotEmpty) {
+                            maxCapacity = int.tryParse(value) ??
+                                0; // Use 0 if parsing fails
+                          } else {
+                            maxCapacity = 0; // Reset if input is empty
+                          }
                         },
                       ),
+                      const SizedBox(height: 20),
                       //create and cancel buttons
                       Container(
                         width: double.infinity,
