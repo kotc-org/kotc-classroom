@@ -62,7 +62,7 @@ jobs:
           # Specify which SDK to use (dart, flutter).
           sdk: dart
           # Specify the Dart SDK version.
-          dart_sdk: 3.5.5
+          dart_sdk: 3.5.3
           # Specify the Flutter SDK version.
           flutter_sdk: 3.22.3
           # Specify the directories to run dart analyze.
