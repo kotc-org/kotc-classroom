@@ -53,5 +53,38 @@ jobs:
   # You may pin to the exact commit or the version.
   # uses: geowatson/flutter-latest@f71e57a721f066cc8d8d197f77991d5ecbaaec9c
         uses: geowatson/flutter-latest@1.0.1
-          
+
+      - name: dart-package
+        uses: nikosportolos/dart_package@v0.2.2
+        with:
+          # Specify the working directory.
+          working_directory: lib
+          # Specify which SDK to use (dart, flutter).
+          sdk: dart
+          # Specify the Dart SDK version.
+          dart_sdk: 3.4.4
+          # Specify the Flutter SDK version.
+          flutter_sdk: 3.22.3
+          # Specify the directories to run dart analyze.
+          analyze_directories: main.dart
+          # The line length to use with dart format.
+          line_length: 120
+          # Controls the number of test suites that runs concurrently, meaning that multiple tests in independent suites or platforms can run at the same time.
+          concurrency: 4
+          # Flag that defines whether to skip tests.
+          skip_tests: false
+          # Flag that defines whether to run tests with coverage.
+          coverage: false
+          # Flag that defines whether to upload coverage reports to Codecov. Requires the codecov_token.
+          codecov: false
+          # The token that will be used to upload coverage reports to Codecov. Requires the codecov flag to be set to true.
+          codecov_token: 
+          # Flag that defines whether to publish the package on pub.dev.
+          publish: false
+          # The token that will be used to publish the package to pub.dev.
+          pubdev_token: 
+          # The exit code will indicate if (max - granted points) <= threshold.
+          pana_threshold: 19
+
+
         
